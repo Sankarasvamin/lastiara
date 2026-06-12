@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lastiara | Digital Anatomy</title>
+    <title>Lastiara | FDSM CDO</title>
     <style>
       :root {
-        --bg: #050505;
+        --cdo-blue-dark: #020c1b;
+        --cdo-blue-mid: #0a192f;
         --glass: rgba(255, 255, 255, 0.035);
         --glass-strong: rgba(255, 255, 255, 0.07);
         --border: rgba(255, 255, 255, 0.09);
-        --text-main: #fcfcfc;
-        --text-dim: rgba(252, 252, 252, 0.56);
+        --text-main: #e6f1ff;
+        --text-dim: #8892b0;
         --accent: #f7c600;
         --accent-soft: rgba(247, 198, 0, 0.14);
         --danger: #f87171;
@@ -26,9 +27,8 @@
         height: 100%;
         margin: 0;
         background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.07), transparent 34%),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 48%),
-          var(--bg);
+          radial-gradient(circle at top right, rgba(247, 198, 0, 0.08), transparent 34%),
+          linear-gradient(135deg, var(--cdo-blue-dark) 0%, #000 100%);
         color: var(--text-main);
         font-family:
           Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -41,43 +41,217 @@
       }
 
       .app {
+        position: relative;
         display: flex;
+        height: 100vh;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .ambient {
+        position: fixed;
+        top: -220px;
+        right: -140px;
+        z-index: 0;
+        width: 620px;
+        height: 620px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(247, 198, 0, 0.055) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .glass-panel {
+        border: 1px solid var(--border);
+        background: var(--glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .sidebar {
+        z-index: 1;
+        display: flex;
+        flex: 0 0 288px;
         flex-direction: column;
         height: 100%;
-        max-width: 700px;
-        margin: 0 auto;
+        padding: 32px;
+        border-width: 0 1px 0 0;
+      }
+
+      .logo {
+        margin-bottom: 48px;
+      }
+
+      .logo h1 {
+        margin: 0;
+        color: var(--accent);
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+
+      .logo p {
+        margin: 6px 0 0;
+        color: var(--text-dim);
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .nav {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--text-dim);
+        cursor: pointer;
+        font-weight: 650;
+        line-height: 1.2;
+        padding: 12px 14px;
+        text-align: left;
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .nav-button:hover {
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--text-main);
+      }
+
+      .nav-button.active {
+        border-color: rgba(247, 198, 0, 0.22);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .nav-icon {
+        flex: 0 0 auto;
+        color: currentColor;
+        font-size: 0.72rem;
+      }
+
+      .main {
+        z-index: 1;
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .view {
+        display: none;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .view.active {
+        display: flex;
+      }
+
+      .home-view,
+      .profile-view {
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 48px;
+        scrollbar-width: none;
+      }
+
+      .home-view::-webkit-scrollbar,
+      .profile-view::-webkit-scrollbar {
+        display: none;
+      }
+
+      .page-title {
+        margin: 0 0 8px;
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        font-weight: 750;
+        letter-spacing: 0;
+      }
+
+      .page-subtitle {
+        margin: 0 0 32px;
+        color: var(--text-dim);
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .glass-card {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--glass);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+        padding: 28px;
+      }
+
+      .hero-card {
+        grid-column: 1 / -1;
+        background:
+          linear-gradient(135deg, rgba(247, 198, 0, 0.12), transparent 58%),
+          var(--glass);
+      }
+
+      .hero-card h2,
+      .glass-card h3 {
+        margin: 0 0 14px;
+        color: var(--accent);
+        font-size: 1.2rem;
+      }
+
+      .hero-card h2 {
+        font-size: clamp(1.4rem, 3vw, 2rem);
+      }
+
+      .muted {
+        color: var(--text-dim);
+      }
+
+      .chat-view {
+        flex-direction: column;
       }
 
       .topbar {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 2rem 2rem 1.25rem;
+        flex: 0 0 auto;
+        padding: 32px;
+        border-bottom: 1px solid var(--border);
       }
 
       .brand {
-        min-width: 0;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
       }
 
       .brand h1 {
         margin: 0;
-        background: linear-gradient(90deg, #fff 0%, var(--accent) 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        font-size: 1.2rem;
-        font-weight: 700;
-        letter-spacing: 2px;
+        color: var(--text-main);
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: 1px;
         text-transform: uppercase;
       }
 
       .brand p {
-        margin: 0.35rem 0 0;
+        margin: 6px 0 0;
         color: var(--text-dim);
-        font-size: 0.7rem;
+        font-size: 0.86rem;
         letter-spacing: 0;
-        text-transform: uppercase;
       }
 
       .status {
@@ -101,7 +275,7 @@
         flex: 1;
         min-height: 0;
         overflow-y: auto;
-        padding: 0 2rem;
+        padding: 32px;
         scrollbar-width: none;
       }
 
@@ -121,7 +295,7 @@
         flex-direction: column;
         gap: 0.5rem;
         max-width: 100%;
-        margin-bottom: 2rem;
+        margin-bottom: 24px;
       }
 
       .message.user {
@@ -141,9 +315,9 @@
 
       .bubble {
         max-width: min(85%, 720px);
-        padding: 1.2rem;
+        padding: 18px 20px;
         border: 1px solid var(--border);
-        border-radius: 20px;
+        border-radius: 12px;
         background: var(--glass);
         backdrop-filter: blur(20px);
         font-size: 0.95rem;
@@ -155,38 +329,45 @@
       }
 
       .message.user .bubble {
-        border-color: transparent;
-        border-radius: 20px 20px 0 20px;
-        background: var(--accent);
-        color: #000;
+        max-width: min(72%, 680px);
+        border: 0;
+        border-right: 4px solid var(--accent);
+        border-radius: 0;
+        background: transparent;
+        color: var(--text-dim);
         font-weight: 450;
+        padding: 8px 14px;
       }
 
       .message.agent .bubble {
-        border-radius: 20px 20px 20px 0;
+        width: min(100%, 820px);
+        max-width: min(100%, 820px);
+        border-radius: 12px;
         background: var(--glass);
         color: var(--text-main);
       }
 
       .composer-wrap {
-        padding: 1.25rem 2rem 2rem;
+        flex: 0 0 auto;
+        padding: 0 32px 32px;
       }
 
       .composer {
         display: flex;
-        gap: 0.5rem;
+        align-items: center;
+        gap: 8px;
         border: 1px solid var(--border);
         border-radius: 30px;
         background: var(--glass);
         backdrop-filter: blur(20px);
-        padding: 0.5rem;
+        padding: 8px 8px 8px 18px;
       }
 
       #question {
         flex: 1;
         min-width: 0;
-        height: 50px;
-        max-height: 160px;
+        height: 46px;
+        max-height: 144px;
         resize: vertical;
         border: 0;
         background: transparent;
@@ -210,10 +391,11 @@
         border: 0;
         border-radius: 25px;
         background: var(--accent);
-        color: var(--bg);
+        color: #050505;
         cursor: pointer;
         font-weight: 700;
-        padding: 0 1.35rem;
+        padding: 0 22px;
+        align-self: stretch;
         transition:
           transform 0.2s ease,
           opacity 0.2s ease;
@@ -228,40 +410,89 @@
         opacity: 0.58;
       }
 
-      .empty {
-        margin-top: 3rem;
+      .profile-head {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-bottom: 40px;
+      }
+
+      .avatar {
+        display: grid;
+        width: 96px;
+        height: 96px;
+        place-items: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #ff8a00);
+        color: #050505;
+        font-size: 2.5rem;
+        font-weight: 800;
+      }
+
+      .profile-head h2 {
+        margin: 0;
+        font-size: 2rem;
+      }
+
+      .profile-head p {
+        margin: 6px 0 0;
         color: var(--text-dim);
-        font-size: 0.9rem;
-        text-align: center;
+      }
+
+      .profile-head .program {
+        color: var(--accent);
+        font-weight: 700;
       }
 
       @media (max-width: 640px) {
         .app {
-          border: 0;
-        }
-
-        .topbar {
-          align-items: flex-start;
           flex-direction: column;
         }
 
-        .topbar {
-          padding: 1rem;
+        .sidebar {
+          flex: 0 0 auto;
+          height: auto;
+          padding: 18px;
+          border-width: 0 0 1px;
         }
 
-        .chat {
-          padding: 0 1rem;
+        .logo {
+          margin-bottom: 16px;
         }
 
+        .nav {
+          flex-direction: row;
+          overflow-x: auto;
+        }
+
+        .nav-button {
+          flex: 0 0 auto;
+          min-width: 126px;
+          justify-content: center;
+          font-size: 0.85rem;
+        }
+
+        .main {
+          min-height: 0;
+        }
+
+        .home-view,
+        .profile-view,
+        .topbar,
+        .chat,
         .composer-wrap {
-          padding: 1rem;
+          padding: 18px;
         }
 
-        .composer {
-          border-radius: 22px;
+        .card-grid {
+          grid-template-columns: 1fr;
         }
 
         .bubble {
+          max-width: 100%;
+        }
+
+        .message.user .bubble {
           max-width: 100%;
         }
 
@@ -274,34 +505,110 @@
   </head>
   <body>
     <main class="app">
-      <header class="topbar">
-        <div class="brand">
-          <h1>Lastiara</h1>
-          <p>Digital Anatomy</p>
-        </div>
-        <div id="status" class="status">System Online</div>
-      </header>
+      <div class="ambient"></div>
 
-      <section class="chat" aria-live="polite">
-        <div id="messages" class="messages">
-          <article class="message agent">
-            <div class="bubble">Querying database... waiting for input.</div>
-          </article>
+      <nav class="sidebar glass-panel" aria-label="Main navigation">
+        <div class="logo">
+          <h1>FDSM CDO</h1>
+          <p>Intelligence Platform</p>
         </div>
+
+        <div class="nav">
+          <button class="nav-button active" type="button" data-view="home">
+            <span class="nav-icon">■</span>
+            职业发展主页
+          </button>
+          <button class="nav-button" type="button" data-view="chat">
+            <span class="nav-icon">◆</span>
+            数据库工作台
+          </button>
+          <button class="nav-button" type="button" data-view="profile">
+            <span class="nav-icon">●</span>
+            个人中心
+          </button>
+        </div>
+      </nav>
+
+      <section class="main">
+        <section id="view-home" class="view home-view active">
+          <h2 class="page-title">欢迎, 万浩同</h2>
+          <p class="page-subtitle">在这里浏览最新的职业机会与活动日程。</p>
+
+          <div class="card-grid">
+            <article class="glass-card hero-card">
+              <h2>FDSM 2026 SPRING CAREER FAIR</h2>
+              <p>2026复旦大学管理学院春季校园招聘会学生报名开启。</p>
+              <p class="muted">[ 待加载企业列表 ]</p>
+            </article>
+
+            <article class="glass-card">
+              <h3>数据库工作台</h3>
+              <p class="muted">进入 Lastiara，查询投递、面试、岗位与 offer 状态。</p>
+            </article>
+
+            <article class="glass-card">
+              <h3>数据服务</h3>
+              <p class="muted">支持自然语言统计查询，并返回简洁业务口径。</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-chat" class="view chat-view">
+          <header class="topbar">
+            <div class="brand">
+              <div>
+                <h1>Lastiara</h1>
+                <p>结构化数据与语义查询中心</p>
+              </div>
+              <div id="status" class="status">System Online</div>
+            </div>
+          </header>
+
+          <section class="chat" aria-live="polite">
+            <div id="messages" class="messages">
+              <article class="message agent">
+                <div class="bubble">已连接至 FDSM 数据库核心。等待输入指令。</div>
+              </article>
+            </div>
+          </section>
+
+          <form id="form" class="composer-wrap">
+            <div class="composer">
+              <textarea
+                id="question"
+                name="question"
+                placeholder="查询简历投递状态或岗位统计..."
+                autocomplete="off"
+                required
+              ></textarea>
+              <button id="send" type="submit">QUERY</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="view-profile" class="view profile-view">
+          <div class="profile-head">
+            <div class="avatar">W</div>
+            <div>
+              <h2>万浩同</h2>
+              <p class="program">统计与数据科学</p>
+              <p>Fudan University, BSc Candidate</p>
+            </div>
+          </div>
+
+          <div class="card-grid">
+            <article class="glass-card">
+              <h3>求职档案记录</h3>
+              <p class="muted">有效简历数 <span>[ Loading... ]</span></p>
+              <p class="muted">投递中岗位 <span>[ Loading... ]</span></p>
+            </article>
+            <article class="glass-card">
+              <h3>系统设置</h3>
+              <p class="muted">终端识别名: <span>Mechanical Banana</span></p>
+            </article>
+          </div>
+        </section>
       </section>
-
-      <form id="form" class="composer-wrap">
-        <div class="composer">
-          <textarea
-            id="question"
-            name="question"
-            placeholder="Ask your data..."
-            autocomplete="off"
-            required
-          ></textarea>
-          <button id="send" type="submit">SEND</button>
-        </div>
-      </form>
     </main>
 
     <script>
@@ -310,10 +617,30 @@
       const sendButton = document.querySelector('#send')
       const messages = document.querySelector('#messages')
       const statusBadge = document.querySelector('#status')
+      const navButtons = document.querySelectorAll('.nav-button')
+      const views = document.querySelectorAll('.view')
 
       let hasMessages = false
 
       checkHealth()
+
+      navButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const target = button.dataset.view
+
+          navButtons.forEach((item) => {
+            item.classList.toggle('active', item === button)
+          })
+
+          views.forEach((view) => {
+            view.classList.toggle('active', view.id === `view-${target}`)
+          })
+
+          if (target === 'chat') {
+            questionInput.focus()
+          }
+        })
+      })
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault()
@@ -467,7 +794,7 @@
       function setLoading(isLoading) {
         sendButton.disabled = isLoading
         questionInput.disabled = isLoading
-        sendButton.textContent = isLoading ? 'WAIT' : 'SEND'
+        sendButton.textContent = isLoading ? 'WAIT' : 'QUERY'
       }
     </script>
   </body>
