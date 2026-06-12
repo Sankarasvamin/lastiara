@@ -1,0 +1,6 @@
+teacher_id,teacher_name,email,phone,specialization,is_active,created_at,updated_at
+1,张老师,zhang@university.edu.cn,13800138001,技术类岗位、互联网行业,True,2026-06-12 10:32:28,2026-06-12 10:32:28
+2,李老师,li@university.edu.cn,13800138002,金融行业、咨询行业,True,2026-06-12 10:32:28,2026-06-12 10:32:28
+3,王老师,wang@university.edu.cn,13800138003,简历优化、面试技巧,True,2026-06-12 10:32:28,2026-06-12 10:32:28
+4,刘老师,liu@university.edu.cn,13800138004,职业规划、行业分析,True,2026-06-12 10:32:28,2026-06-12 10:32:28
+5,陈老师,chen@university.edu.cn,13800138005,数据分析、AI岗位,True,2026-06-12 10:32:28,2026-06-12 10:32:28
