@@ -3,19 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lastiara | FDSM CDO</title>
+    <title>Lastiara | 招聘数据协同工作台</title>
     <style>
       :root {
-        --cdo-blue-dark: #020c1b;
-        --cdo-blue-mid: #0a192f;
-        --glass: rgba(255, 255, 255, 0.035);
-        --glass-strong: rgba(255, 255, 255, 0.07);
-        --border: rgba(255, 255, 255, 0.09);
-        --text-main: #e6f1ff;
-        --text-dim: #8892b0;
-        --accent: #f7c600;
-        --accent-soft: rgba(247, 198, 0, 0.14);
-        --danger: #f87171;
+        --bg: #050505;
+        --panel: #0a0a0a;
+        --panel-2: #111111;
+        --panel-3: #1a1a1a;
+        --line: #1f2937;
+        --line-2: #303030;
+        --text: #f5f5f5;
+        --muted: #9a9a9a;
+        --dim: #585858;
+        --gold: #f7c600;
+        --gold-soft: rgba(247, 198, 0, 0.08);
+        --gold-line: rgba(247, 198, 0, 0.32);
+        --danger: #ff6b61;
+        --radius: 2px;
       }
 
       * {
@@ -25,14 +29,16 @@
       html,
       body {
         height: 100%;
+      }
+
+      body {
         margin: 0;
-        background:
-          radial-gradient(circle at top right, rgba(247, 198, 0, 0.08), transparent 34%),
-          linear-gradient(135deg, var(--cdo-blue-dark) 0%, #000 100%);
-        color: var(--text-main);
+        background: var(--bg);
+        color: var(--text);
         font-family:
-          Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          "Arial Narrow", "Roboto Condensed", "Inter Tight", "PingFang SC",
+          "Microsoft YaHei", Arial, sans-serif;
+        letter-spacing: 0;
       }
 
       button,
@@ -40,605 +46,976 @@
         font: inherit;
       }
 
+      button {
+        border: 0;
+      }
+
       .app {
-        position: relative;
-        display: flex;
+        display: grid;
+        grid-template-columns: 288px minmax(0, 1fr);
         height: 100vh;
-        width: 100%;
         overflow: hidden;
-      }
-
-      .ambient {
-        position: fixed;
-        top: -220px;
-        right: -140px;
-        z-index: 0;
-        width: 620px;
-        height: 620px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(247, 198, 0, 0.055) 0%, transparent 70%);
-        pointer-events: none;
-      }
-
-      .glass-panel {
-        border: 1px solid var(--border);
-        background: var(--glass);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 4px),
+          var(--bg);
       }
 
       .sidebar {
-        z-index: 1;
+        z-index: 2;
         display: flex;
-        flex: 0 0 288px;
+        min-height: 0;
         flex-direction: column;
-        height: 100%;
-        padding: 32px;
-        border-width: 0 1px 0 0;
+        border-right: 1px solid var(--line);
+        background: var(--panel);
       }
 
       .logo {
-        margin-bottom: 48px;
-      }
-
-      .logo h1 {
-        margin: 0;
-        color: var(--accent);
-        font-size: 1.5rem;
-        font-weight: 800;
-        letter-spacing: 2px;
-      }
-
-      .logo p {
-        margin: 6px 0 0;
-        color: var(--text-dim);
-        font-size: 0.7rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-      }
-
-      .nav {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .nav-button {
-        display: flex;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
         gap: 12px;
-        width: 100%;
-        min-height: 48px;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        background: transparent;
-        color: var(--text-dim);
-        cursor: pointer;
-        font-weight: 650;
-        line-height: 1.2;
-        padding: 12px 14px;
-        text-align: left;
-        transition:
-          background 0.2s ease,
-          border-color 0.2s ease,
-          color 0.2s ease;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        padding: 22px 24px;
       }
 
-      .nav-button:hover {
-        background: rgba(255, 255, 255, 0.045);
-        color: var(--text-main);
-      }
-
-      .nav-button.active {
-        border-color: rgba(247, 198, 0, 0.22);
-        background: var(--accent-soft);
-        color: var(--accent);
-      }
-
-      .nav-icon {
-        flex: 0 0 auto;
-        color: currentColor;
+      .mark {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: var(--radius);
+        background: var(--gold);
+        color: #000;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 0.72rem;
+        font-weight: 900;
       }
 
-      .main {
-        z-index: 1;
-        flex: 1;
-        min-width: 0;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .view {
-        display: none;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .view.active {
-        display: flex;
-      }
-
-      .home-view,
-      .profile-view {
-        flex-direction: column;
-        overflow-y: auto;
-        padding: 48px;
-        scrollbar-width: none;
-      }
-
-      .home-view::-webkit-scrollbar,
-      .profile-view::-webkit-scrollbar {
-        display: none;
-      }
-
-      .page-title {
-        margin: 0 0 8px;
-        font-size: clamp(1.75rem, 4vw, 2.25rem);
-        font-weight: 750;
+      .logo h1,
+      .brand h1,
+      .context-panel h2,
+      .terminal-title,
+      .empty h2 {
+        margin: 0;
         letter-spacing: 0;
       }
 
-      .page-subtitle {
-        margin: 0 0 32px;
-        color: var(--text-dim);
+      .logo h1 {
+        overflow: hidden;
+        color: var(--text);
+        font-size: 0.88rem;
+        font-weight: 850;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
-      .card-grid {
+      .logo p {
+        margin: 3px 0 0;
+        color: var(--dim);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .thread-list {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 22px 0;
+      }
+
+      .nav-kicker,
+      .system-version {
+        color: var(--dim);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.66rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav-kicker {
+        padding: 0 24px 8px;
+      }
+
+      .thread {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 24px;
+        grid-template-columns: minmax(0, 1fr) 10px;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+        min-height: 44px;
+        border-left: 4px solid transparent;
+        background: transparent;
+        color: #5e5e5e;
+        cursor: pointer;
+        padding: 10px 20px;
+        text-align: left;
       }
 
-      .glass-card {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--glass);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
-        padding: 28px;
+      .thread:hover {
+        background: #111;
+        color: #d0d0d0;
       }
 
-      .hero-card {
-        grid-column: 1 / -1;
+      .thread.active {
+        border-left-color: var(--gold);
+        background: var(--panel-3);
+        color: var(--text);
+      }
+
+      .thread-title {
+        min-width: 0;
+        overflow: hidden;
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .thread-meta {
+        width: 7px;
+        height: 7px;
+        border: 1px solid #3a3a3a;
+        border-radius: 50%;
+        color: transparent;
+        font-size: 0;
+      }
+
+      .thread.active .thread-meta {
+        border-color: var(--gold);
+        background: var(--gold);
+      }
+
+      .new-chat {
+        min-height: 42px;
+        margin: 18px 24px;
+        border: 1px solid var(--gold-line);
+        border-radius: var(--radius);
+        background: #191300;
+        color: var(--gold);
+        cursor: pointer;
+        font-size: 0.76rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .new-chat:hover {
+        background: var(--gold);
+        color: #000;
+      }
+
+      .system-version {
+        border-top: 1px solid var(--line);
+        padding: 18px 24px;
+      }
+
+      .main {
+        display: grid;
+        grid-template-rows: 64px minmax(0, 1fr);
+        min-width: 0;
+        min-height: 0;
         background:
-          linear-gradient(135deg, rgba(247, 198, 0, 0.12), transparent 58%),
-          var(--glass);
-      }
-
-      .hero-card h2,
-      .glass-card h3 {
-        margin: 0 0 14px;
-        color: var(--accent);
-        font-size: 1.2rem;
-      }
-
-      .hero-card h2 {
-        font-size: clamp(1.4rem, 3vw, 2rem);
-      }
-
-      .muted {
-        color: var(--text-dim);
-      }
-
-      .chat-view {
-        flex-direction: column;
+          radial-gradient(circle at 80% 15%, rgba(247, 198, 0, 0.05), transparent 26%),
+          var(--bg);
       }
 
       .topbar {
-        flex: 0 0 auto;
-        padding: 32px;
-        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        background: rgba(10, 10, 10, 0.96);
+        padding: 0 32px;
       }
 
       .brand {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
-        gap: 16px;
+        gap: 22px;
+        width: 100%;
       }
 
       .brand h1 {
-        margin: 0;
-        color: var(--text-main);
-        font-size: 1.5rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        color: var(--text);
+        font-size: 1.08rem;
+        font-weight: 850;
       }
 
       .brand p {
-        margin: 6px 0 0;
-        color: var(--text-dim);
-        font-size: 0.86rem;
-        letter-spacing: 0;
+        margin: 4px 0 0;
+        color: var(--dim);
+        font-size: 0.76rem;
+      }
+
+      .top-meta {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 14px;
+        color: #777;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+
+      .agent-id,
+      .role-chip {
+        border: 1px solid #343434;
+        border-radius: var(--radius);
+        background: #171717;
+        color: #a0a0a0;
+        padding: 4px 7px;
       }
 
       .status {
-        flex: 0 0 auto;
-        color: var(--text-dim);
-        font-size: 0.65rem;
-        letter-spacing: 0;
-        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        min-width: 130px;
+        color: var(--gold);
         white-space: nowrap;
       }
 
-      .status.ready {
-        color: var(--accent);
+      .status::before {
+        width: 7px;
+        height: 7px;
+        margin-right: 8px;
+        border-radius: 50%;
+        background: #444;
+        content: "";
+      }
+
+      .status.ready::before {
+        background: var(--gold);
       }
 
       .status.error {
         color: var(--danger);
       }
 
+      .status.error::before {
+        background: var(--danger);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(380px, 0.45fr) minmax(520px, 0.55fr);
+        gap: 28px;
+        min-height: 0;
+        overflow: hidden;
+        padding: 28px 32px;
+      }
+
+      .context-panel {
+        display: flex;
+        min-height: 0;
+        flex-direction: column;
+        gap: 22px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .logic-card,
+      .panel-card,
+      .output-card,
+      .terminal-shell {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel-2);
+      }
+
+      .logic-card {
+        position: relative;
+        overflow: hidden;
+        padding: 22px 24px 22px 28px;
+      }
+
+      .logic-card::before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 3px;
+        background: var(--gold);
+        content: "";
+      }
+
+      .logic-card h2,
+      .panel-card h3,
+      .output-card h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.88rem;
+        font-weight: 850;
+      }
+
+      .role {
+        margin-top: 7px;
+        color: var(--gold);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .logic-card p {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+        line-height: 1.68;
+      }
+
+      .panel-card {
+        padding: 22px 24px;
+      }
+
+      .panel-card h3 {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+        color: #d6d6d6;
+      }
+
+      .panel-card h3::before {
+        width: 6px;
+        height: 6px;
+        margin-right: 9px;
+        background: #646464;
+        content: "";
+      }
+
+      .panel-card ul {
+        display: grid;
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .panel-card li {
+        position: relative;
+        border-left: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.55;
+        padding-left: 16px;
+      }
+
+      .panel-card li::before {
+        position: absolute;
+        top: 0.8em;
+        left: 0;
+        width: 8px;
+        height: 1px;
+        background: var(--line);
+        content: "";
+      }
+
+      .output-card {
+        border-color: var(--gold-line);
+        padding: 20px 24px;
+      }
+
+      .output-card h3 {
+        color: var(--gold);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .output-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .output-item {
+        border: 1px solid #343434;
+        border-radius: var(--radius);
+        background: var(--panel-3);
+        color: #d2d2d2;
+        font-size: 0.78rem;
+        padding: 7px 10px;
+      }
+
+      .terminal-shell {
+        display: flex;
+        min-width: 0;
+        min-height: 0;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      .terminal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 42px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+        padding: 0 16px;
+      }
+
+      .terminal-dots {
+        display: flex;
+        gap: 8px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot.red {
+        background: rgba(127, 29, 29, 0.58);
+      }
+
+      .dot.yellow {
+        background: rgba(247, 198, 0, 0.26);
+      }
+
+      .dot.green {
+        background: rgba(22, 101, 52, 0.58);
+      }
+
+      .terminal-title {
+        color: #666;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .terminal-version {
+        display: none;
+      }
+
       .chat {
         flex: 1;
         min-height: 0;
         overflow-y: auto;
-        padding: 32px;
-        scrollbar-width: none;
-      }
-
-      .chat::-webkit-scrollbar {
-        display: none;
+        padding: 22px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       }
 
       .messages {
         display: flex;
-        flex-direction: column;
-        gap: 0;
         min-height: 100%;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .empty {
+        display: grid;
+        gap: 14px;
+      }
+
+      .empty h2 {
+        display: none;
+      }
+
+      .empty p {
+        margin: 0 0 6px;
+        color: #686868;
+        font-size: 0.78rem;
+        line-height: 1.65;
+      }
+
+      .prompt-row {
+        display: grid;
+        gap: 8px;
+      }
+
+      .prompt {
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 0;
+        background: transparent;
+        color: #8d8d8d;
+        cursor: pointer;
+        font-size: 0.78rem;
+        line-height: 1.45;
+        padding: 9px 11px;
+        text-align: left;
+      }
+
+      .prompt:hover {
+        border-color: var(--gold-line);
+        color: var(--gold);
       }
 
       .message {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        max-width: 100%;
-        margin-bottom: 24px;
+        gap: 6px;
+        margin-bottom: 4px;
       }
 
       .message.user {
         align-items: flex-end;
       }
 
-      .message.agent {
+      .message.agent,
+      .message.system {
         align-items: flex-start;
       }
 
       .label {
-        color: var(--text-dim);
-        font-size: 0.65rem;
-        letter-spacing: 0;
+        color: var(--gold);
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
       }
 
+      .message.user .label {
+        color: #666;
+      }
+
       .bubble {
-        max-width: min(85%, 720px);
-        padding: 18px 20px;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        background: var(--glass);
-        backdrop-filter: blur(20px);
-        font-size: 0.95rem;
-        font-weight: 300;
-        line-height: 1.6;
-        letter-spacing: 0;
-        white-space: pre-wrap;
+        max-width: min(90%, 860px);
+        border: 1px solid var(--gold-line);
+        border-radius: 0;
+        background: rgba(247, 198, 0, 0.045);
+        color: #d0d0d0;
+        font-family:
+          "Arial Narrow", "Roboto Condensed", "Inter Tight", "PingFang SC",
+          "Microsoft YaHei", Arial, sans-serif;
+        font-size: 0.84rem;
+        line-height: 1.72;
         overflow-wrap: break-word;
+        padding: 13px 15px;
+        white-space: pre-wrap;
       }
 
       .message.user .bubble {
-        max-width: min(72%, 680px);
-        border: 0;
-        border-right: 4px solid var(--accent);
-        border-radius: 0;
-        background: transparent;
-        color: var(--text-dim);
-        font-weight: 450;
-        padding: 8px 14px;
-      }
-
-      .message.agent .bubble {
-        width: min(100%, 820px);
-        max-width: min(100%, 820px);
-        border-radius: 12px;
-        background: var(--glass);
-        color: var(--text-main);
+        border-color: #444;
+        background: var(--panel-3);
+        color: var(--text);
       }
 
       .composer-wrap {
         flex: 0 0 auto;
-        padding: 0 32px 32px;
+        border-top: 1px solid var(--line);
+        background: var(--panel);
+        padding: 14px;
       }
 
       .composer {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid var(--border);
-        border-radius: 30px;
-        background: var(--glass);
-        backdrop-filter: blur(20px);
-        padding: 8px 8px 8px 18px;
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr) 108px;
+        align-items: stretch;
+        border: 1px solid #3a3a3a;
+        background: var(--panel-2);
+      }
+
+      .composer::before {
+        display: grid;
+        place-items: center;
+        color: var(--gold);
+        content: ">";
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 1rem;
+      }
+
+      .composer:focus-within {
+        border-color: var(--gold);
       }
 
       #question {
-        flex: 1;
-        min-width: 0;
-        height: 46px;
-        max-height: 144px;
+        width: 100%;
+        min-height: 48px;
+        max-height: 150px;
         resize: vertical;
         border: 0;
         background: transparent;
-        color: #fff;
+        color: var(--text);
         outline: none;
-        padding: 1rem;
-        font-size: 0.9rem;
-      }
-
-      #question:focus {
-        box-shadow: none;
+        padding: 13px 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.82rem;
+        line-height: 1.5;
       }
 
       #question::placeholder {
-        color: rgba(255, 255, 255, 0.38);
+        color: #505050;
       }
 
       #send {
-        flex: 0 0 auto;
-        min-width: 86px;
-        border: 0;
-        border-radius: 25px;
-        background: var(--accent);
-        color: #050505;
+        min-height: 48px;
+        border-left: 1px solid #3a3a3a;
+        border-radius: 0;
+        background: var(--panel-3);
+        color: #a0a0a0;
         cursor: pointer;
-        font-weight: 700;
-        padding: 0 22px;
-        align-self: stretch;
-        transition:
-          transform 0.2s ease,
-          opacity 0.2s ease;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
       }
 
-      #send:active {
-        transform: scale(0.96);
+      #send:hover,
+      #send:focus {
+        background: var(--gold);
+        color: #000;
       }
 
       #send:disabled {
         cursor: not-allowed;
-        opacity: 0.58;
+        opacity: 0.42;
       }
 
-      .profile-head {
-        display: flex;
-        align-items: center;
-        gap: 28px;
-        margin-bottom: 40px;
+      .hint {
+        margin: 9px 0 0;
+        color: #555;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.68rem;
       }
 
-      .avatar {
-        display: grid;
-        width: 96px;
-        height: 96px;
-        place-items: center;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent), #ff8a00);
-        color: #050505;
-        font-size: 2.5rem;
-        font-weight: 800;
+      ::selection {
+        background: var(--gold);
+        color: #000;
       }
 
-      .profile-head h2 {
-        margin: 0;
-        font-size: 2rem;
-      }
-
-      .profile-head p {
-        margin: 6px 0 0;
-        color: var(--text-dim);
-      }
-
-      .profile-head .program {
-        color: var(--accent);
-        font-weight: 700;
-      }
-
-      @media (max-width: 640px) {
+      @media (max-width: 1120px) {
         .app {
-          flex-direction: column;
+          grid-template-columns: 236px minmax(0, 1fr);
+        }
+
+        .workspace {
+          grid-template-columns: 1fr;
+          overflow-y: auto;
+        }
+
+        .context-panel {
+          overflow: visible;
+        }
+
+        .terminal-shell {
+          min-height: 620px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto minmax(0, 1fr);
         }
 
         .sidebar {
-          flex: 0 0 auto;
-          height: auto;
-          padding: 18px;
-          border-width: 0 0 1px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
         }
 
         .logo {
-          margin-bottom: 16px;
+          padding: 14px 16px;
         }
 
-        .nav {
-          flex-direction: row;
+        .thread-list {
+          display: flex;
+          gap: 0;
           overflow-x: auto;
+          padding: 10px 0;
         }
 
-        .nav-button {
-          flex: 0 0 auto;
-          min-width: 126px;
-          justify-content: center;
-          font-size: 0.85rem;
+        .nav-kicker,
+        .new-chat,
+        .system-version {
+          display: none;
+        }
+
+        .thread {
+          flex: 0 0 132px;
+          border-left: 0;
+          border-bottom: 3px solid transparent;
+          padding: 10px 12px;
+        }
+
+        .thread.active {
+          border-bottom-color: var(--gold);
         }
 
         .main {
           min-height: 0;
         }
 
-        .home-view,
-        .profile-view,
-        .topbar,
-        .chat,
-        .composer-wrap {
-          padding: 18px;
+        .topbar {
+          min-height: 86px;
+          padding: 12px 16px;
         }
 
-        .card-grid {
-          grid-template-columns: 1fr;
+        .brand {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .top-meta {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .workspace {
+          gap: 12px;
+          padding: 12px;
+        }
+
+        .terminal-shell {
+          min-height: 560px;
         }
 
         .bubble {
           max-width: 100%;
         }
 
-        .message.user .bubble {
-          max-width: 100%;
-        }
-
-        #send {
-          min-width: 72px;
-          padding: 0 1rem;
+        .composer {
+          grid-template-columns: 26px minmax(0, 1fr) 78px;
         }
       }
     </style>
   </head>
   <body>
     <main class="app">
-      <div class="ambient"></div>
-
-      <nav class="sidebar glass-panel" aria-label="Main navigation">
+      <aside class="sidebar" aria-label="角色导航">
         <div class="logo">
-          <h1>FDSM CDO</h1>
-          <p>Intelligence Platform</p>
+          <div class="mark">LAS</div>
+          <div>
+            <h1>Lastiara</h1>
+            <p>FDSM Career Data Console</p>
+          </div>
         </div>
 
-        <div class="nav">
-          <button class="nav-button active" type="button" data-view="home">
-            <span class="nav-icon">■</span>
-            职业发展主页
+        <div class="thread-list" aria-label="协同角色序列">
+          <div class="nav-kicker">Core Roles</div>
+          <button class="thread active" type="button" data-agent="teacher">
+            <span class="thread-title">老师：就业数据管理</span>
+            <span class="thread-meta">active</span>
           </button>
-          <button class="nav-button" type="button" data-view="chat">
-            <span class="nav-icon">◆</span>
-            数据库工作台
+          <button class="thread" type="button" data-agent="hr">
+            <span class="thread-title">HR：岗位与候选人匹配</span>
+            <span class="thread-meta">standby</span>
           </button>
-          <button class="nav-button" type="button" data-view="profile">
-            <span class="nav-icon">●</span>
-            个人中心
+          <button class="thread" type="button" data-agent="student">
+            <span class="thread-title">学生：求职进度助手</span>
+            <span class="thread-meta">standby</span>
           </button>
         </div>
-      </nav>
+
+        <button id="new-chat" class="new-chat" type="button">Reset Session</button>
+        <div class="system-version">Lastiara System: v0.1.0_Local</div>
+      </aside>
 
       <section class="main">
-        <section id="view-home" class="view home-view active">
-          <h2 class="page-title">欢迎, 万浩同</h2>
-          <p class="page-subtitle">在这里浏览最新的职业机会与活动日程。</p>
-
-          <div class="card-grid">
-            <article class="glass-card hero-card">
-              <h2>FDSM 2026 SPRING CAREER FAIR</h2>
-              <p>2026复旦大学管理学院春季校园招聘会学生报名开启。</p>
-              <p class="muted">[ 待加载企业列表 ]</p>
-            </article>
-
-            <article class="glass-card">
-              <h3>数据库工作台</h3>
-              <p class="muted">进入 Lastiara，查询投递、面试、岗位与 offer 状态。</p>
-            </article>
-
-            <article class="glass-card">
-              <h3>数据服务</h3>
-              <p class="muted">支持自然语言统计查询，并返回简洁业务口径。</p>
-            </article>
-          </div>
-        </section>
-
-        <section id="view-chat" class="view chat-view">
-          <header class="topbar">
-            <div class="brand">
-              <div>
-                <h1>Lastiara</h1>
-                <p>结构化数据与语义查询中心</p>
-              </div>
-              <div id="status" class="status">System Online</div>
-            </div>
-          </header>
-
-          <section class="chat" aria-live="polite">
-            <div id="messages" class="messages">
-              <article class="message agent">
-                <div class="bubble">已连接至 FDSM 数据库核心。等待输入指令。</div>
-              </article>
-            </div>
-          </section>
-
-          <form id="form" class="composer-wrap">
-            <div class="composer">
-              <textarea
-                id="question"
-                name="question"
-                placeholder="查询简历投递状态或岗位统计..."
-                autocomplete="off"
-                required
-              ></textarea>
-              <button id="send" type="submit">QUERY</button>
-            </div>
-          </form>
-        </section>
-
-        <section id="view-profile" class="view profile-view">
-          <div class="profile-head">
-            <div class="avatar">W</div>
+        <header class="topbar">
+          <div class="brand">
             <div>
-              <h2>万浩同</h2>
-              <p class="program">统计与数据科学</p>
-              <p>Fudan University, BSc Candidate</p>
+              <h1 id="agent-title">就业数据管理工作台</h1>
+              <p id="agent-subtitle">面向学院老师，集中查看学生、企业、岗位、投递与面试数据。</p>
+            </div>
+            <div class="top-meta">
+              <span id="agent-id" class="agent-id">ROLE: TEACHER</span>
+              <span id="status" class="status">ENGINE: CHECKING</span>
+              <span id="role-chip" class="role-chip">SCOPE: ADMIN</span>
+              <span>SYS: LASTIARA</span>
             </div>
           </div>
+        </header>
 
-          <div class="card-grid">
-            <article class="glass-card">
-              <h3>求职档案记录</h3>
-              <p class="muted">有效简历数 <span>[ Loading... ]</span></p>
-              <p class="muted">投递中岗位 <span>[ Loading... ]</span></p>
-            </article>
-            <article class="glass-card">
-              <h3>系统设置</h3>
-              <p class="muted">终端识别名: <span>Mechanical Banana</span></p>
-            </article>
-          </div>
+        <section class="workspace">
+          <aside class="context-panel" aria-label="角色业务模型">
+            <section id="role-card" class="logic-card active">
+              <h2>当前角色定位</h2>
+              <div id="agent-role" class="role">学院就业数据管理员</div>
+              <p id="agent-desc">从学院管理视角整合学生求职档案、企业岗位、活动报名、投递流程与录用结果，支持就业服务过程中的统计、追踪与解释。</p>
+            </section>
+
+            <div id="panel-stack"></div>
+
+            <section class="output-card">
+              <h3>Standard Outputs</h3>
+              <div id="output-list" class="output-list"></div>
+            </section>
+          </aside>
+
+          <section id="terminal-shell" class="terminal-shell">
+            <div class="terminal-head">
+              <div class="terminal-dots" aria-hidden="true">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <h2 id="terminal-mode" class="terminal-title">Interactive_Query</h2>
+              <span class="terminal-version">LASTIARA_ROLE_CONSOLE</span>
+            </div>
+
+            <section class="chat" aria-live="polite">
+              <div id="messages" class="messages"></div>
+            </section>
+
+            <form id="form" class="composer-wrap">
+              <div class="composer">
+                <textarea
+                  id="question"
+                  name="question"
+                  placeholder="输入就业数据查询或业务问题..."
+                  autocomplete="off"
+                  required
+                ></textarea>
+                <button id="send" type="submit">Query</button>
+              </div>
+              <p id="hint" class="hint">CMD/CTRL + ENTER QUERY / TARGET: 学生档案、企业岗位、投递面试、offer 状态</p>
+            </form>
+          </section>
         </section>
       </section>
     </main>
 
     <script>
+      const ROLES = {
+        teacher: {
+          id: 'teacher',
+          menuName: '老师：就业数据管理',
+          title: '就业数据管理工作台',
+          scope: 'ADMIN',
+          role: '学院就业数据管理员',
+          desc: '从学院管理视角整合学生求职档案、企业岗位、活动报名、投递流程与录用结果，支持就业服务过程中的统计、追踪与解释。',
+          panels: [
+            {
+              title: '核心关注数据',
+              items: [
+                '学生画像：专业、年级、简历状态、求职方向与就业去向',
+                '企业与岗位：招聘单位、岗位类型、行业标签与岗位要求',
+                '过程记录：报名、投递、笔试、面试、offer 与签约状态',
+              ],
+            },
+            {
+              title: '典型管理问题',
+              items: [
+                '统计不同项目学生的投递、面试、offer 转化情况',
+                '识别长期无进展学生，并给出后续跟进名单',
+                '比较企业参与度、岗位供给和学生匹配热度',
+              ],
+            },
+          ],
+          outputs: ['就业进展统计', '重点跟进名单', '企业岗位复盘', '活动报名汇总'],
+          prompts: [
+            '统计目前各专业学生的投递、面试和 offer 数量。',
+            '找出求职进度停留在投递阶段较久的学生，并说明可能需要跟进的原因。',
+            '按企业统计岗位数量、投递人数和面试转化情况。',
+            '生成本周就业服务工作简报，包含风险学生和重点企业。',
+          ],
+          contextPrefix: '请以学院就业指导老师的数据管理视角回答，重点关注统计口径、跟进对象和管理决策。',
+        },
+        hr: {
+          id: 'hr',
+          menuName: 'HR：岗位与候选人匹配',
+          title: '岗位与候选人匹配工作台',
+          scope: 'RECRUIT',
+          role: '企业招聘协同专员',
+          desc: '从企业 HR 视角查看岗位需求、候选人条件、投递记录与面试安排，帮助快速定位合适学生并理解匹配依据。',
+          panels: [
+            {
+              title: '核心关注数据',
+              items: [
+                '岗位需求：岗位名称、技能要求、工作地点、学历与专业偏好',
+                '候选人画像：学生专业、项目背景、实习经历、求职意向',
+                '招聘流程：候选人筛选、面试批次、反馈记录与录用状态',
+              ],
+            },
+            {
+              title: '典型招聘问题',
+              items: [
+                '筛选符合某岗位要求的候选学生，并说明匹配理由',
+                '比较不同候选人在专业背景、经历和求职意向上的差异',
+                '追踪目标岗位的投递漏斗和面试安排状态',
+              ],
+            },
+          ],
+          outputs: ['候选人短名单', '岗位匹配说明', '面试安排摘要', '招聘漏斗分析'],
+          prompts: [
+            '帮我筛选适合数据分析实习岗位的学生，并列出匹配理由。',
+            '比较目标岗位下已投递学生的专业、技能和经历差异。',
+            '查看某企业岗位目前的投递、筛选、面试和 offer 状态。',
+            '根据岗位要求生成一份候选人推荐摘要。',
+          ],
+          contextPrefix: '请以企业 HR 的招聘匹配视角回答，重点关注岗位要求、候选人匹配度和招聘流程推进。',
+        },
+        student: {
+          id: 'student',
+          menuName: '学生：求职进度助手',
+          title: '学生求职进度助手',
+          scope: 'STUDENT',
+          role: '个人求职状态助手',
+          desc: '从学生视角聚焦个人简历、投递记录、面试安排、offer 结果与下一步行动，帮助学生理解当前进度并制定求职策略。',
+          panels: [
+            {
+              title: '核心关注数据',
+              items: [
+                '个人档案：简历版本、求职方向、目标行业与偏好地点',
+                '投递记录：已投岗位、流程节点、反馈时间和下一步动作',
+                '机会推荐：可申请岗位、活动报名和与背景匹配的企业',
+              ],
+            },
+            {
+              title: '典型学生问题',
+              items: [
+                '查看个人投递进度，并区分待跟进、已反馈和已结束机会',
+                '根据个人方向推荐更适合的岗位或企业活动',
+                '整理面试准备重点和后续跟进事项',
+              ],
+            },
+          ],
+          outputs: ['个人进度看板', '岗位推荐清单', '面试准备要点', '后续行动计划'],
+          prompts: [
+            '查看我的投递进度，并告诉我哪些岗位需要优先跟进。',
+            '根据统计与数据科学背景，推荐适合申请的岗位类型。',
+            '整理我接下来一周的求职行动计划。',
+            '帮我总结面试准备重点，并指出简历中需要补强的方向。',
+          ],
+          contextPrefix: '请以学生个人求职助手视角回答，重点关注个人进度、岗位选择、行动建议和表达清晰度。',
+        },
+      }
+
       const form = document.querySelector('#form')
       const questionInput = document.querySelector('#question')
       const sendButton = document.querySelector('#send')
       const messages = document.querySelector('#messages')
       const statusBadge = document.querySelector('#status')
-      const navButtons = document.querySelectorAll('.nav-button')
-      const views = document.querySelectorAll('.view')
+      const newChatButton = document.querySelector('#new-chat')
+      const navButtons = document.querySelectorAll('.thread')
+      const agentTitle = document.querySelector('#agent-title')
+      const agentSubtitle = document.querySelector('#agent-subtitle')
+      const agentId = document.querySelector('#agent-id')
+      const roleChip = document.querySelector('#role-chip')
+      const agentRole = document.querySelector('#agent-role')
+      const agentDesc = document.querySelector('#agent-desc')
+      const panelStack = document.querySelector('#panel-stack')
+      const outputList = document.querySelector('#output-list')
+      const terminalMode = document.querySelector('#terminal-mode')
+      const hint = document.querySelector('#hint')
 
-      let hasMessages = false
+      let activeRoleId = 'teacher'
+      const roleMessages = {
+        teacher: '',
+        hr: '',
+        student: '',
+      }
+      const roleHasMessages = {
+        teacher: false,
+        hr: false,
+        student: false,
+      }
 
+      renderRole('teacher', true)
       checkHealth()
 
       navButtons.forEach((button) => {
         button.addEventListener('click', () => {
-          const target = button.dataset.view
-
-          navButtons.forEach((item) => {
-            item.classList.toggle('active', item === button)
-          })
-
-          views.forEach((view) => {
-            view.classList.toggle('active', view.id === `view-${target}`)
-          })
-
-          if (target === 'chat') {
-            questionInput.focus()
-          }
+          renderRole(button.dataset.agent)
         })
       })
 
@@ -648,16 +1025,19 @@
         const question = questionInput.value.trim()
         if (!question) return
 
-        addMessage('user', 'You', question)
+        const role = ROLES[activeRoleId]
+
+        addMessage('user', 'User_Query', question)
         questionInput.value = ''
+        questionInput.style.height = ''
         setLoading(true)
 
-        const pending = addMessage('agent', 'Coze', 'Thinking... complex workflow queries may take 1-3 minutes.')
+        const pending = addMessage('agent', 'System_Output', '【查询确认】正在读取角色上下文并执行数据问答。')
 
         try {
-          await streamAnswer(question, pending.querySelector('.bubble'))
+          await streamAnswer(`${role.contextPrefix}\n\n用户问题：${question}`, pending.querySelector('.bubble'))
         } catch (error) {
-          pending.querySelector('.bubble').textContent = error.message
+          pending.querySelector('.bubble').textContent = `【执行中断】${error.message}`
         } finally {
           setLoading(false)
           questionInput.focus()
@@ -670,24 +1050,81 @@
         }
       })
 
+      questionInput.addEventListener('input', () => {
+        questionInput.style.height = 'auto'
+        questionInput.style.height = `${Math.min(questionInput.scrollHeight, 150)}px`
+      })
+
+      newChatButton.addEventListener('click', () => {
+        roleMessages[activeRoleId] = ''
+        roleHasMessages[activeRoleId] = false
+        renderRole(activeRoleId, true)
+        questionInput.focus()
+      })
+
       async function checkHealth() {
         try {
           const response = await fetch('/api/health')
           const data = await response.json()
 
           if (data.agent?.configured) {
-            statusBadge.textContent = 'Coze configured'
+            statusBadge.textContent = 'ENGINE: ONLINE'
             statusBadge.classList.add('ready')
             statusBadge.classList.remove('error')
             return
           }
 
-          statusBadge.textContent = 'Coze API pending'
+          statusBadge.textContent = 'ENGINE: PENDING'
           statusBadge.classList.remove('ready', 'error')
         } catch {
-          statusBadge.textContent = 'Local API offline'
+          statusBadge.textContent = 'ENGINE: OFFLINE'
           statusBadge.classList.add('error')
           statusBadge.classList.remove('ready')
+        }
+      }
+
+      function renderRole(roleId, reset = false) {
+        if (activeRoleId && !reset) {
+          roleMessages[activeRoleId] = messages.innerHTML
+        }
+
+        activeRoleId = roleId
+        const role = ROLES[roleId]
+
+        navButtons.forEach((button) => {
+          button.classList.toggle('active', button.dataset.agent === roleId)
+          button.querySelector('.thread-meta').textContent = button.dataset.agent === roleId ? 'active' : 'standby'
+        })
+
+        agentTitle.textContent = role.title
+        agentSubtitle.textContent = role.desc
+        agentId.textContent = `ROLE: ${role.id.toUpperCase()}`
+        roleChip.textContent = `SCOPE: ${role.scope}`
+        agentRole.textContent = role.role
+        agentDesc.textContent = role.desc
+        terminalMode.textContent = `${role.id}_query_shell`
+        questionInput.placeholder = getPlaceholder(roleId)
+        hint.textContent = getHint(roleId)
+
+        panelStack.innerHTML = role.panels.map((panel) => `
+          <section class="panel-card">
+            <h3>${escapeHtml(panel.title)}</h3>
+            <ul>
+              ${panel.items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+            </ul>
+          </section>
+        `).join('')
+
+        outputList.innerHTML = role.outputs
+          .map((item) => `<span class="output-item">${escapeHtml(item)}</span>`)
+          .join('')
+
+        if (reset || !roleMessages[roleId]) {
+          messages.innerHTML = getEmptyState(role)
+          roleHasMessages[roleId] = false
+          roleMessages[roleId] = messages.innerHTML
+        } else {
+          messages.innerHTML = roleMessages[roleId]
         }
       }
 
@@ -700,7 +1137,7 @@
 
         if (!response.ok || !response.body) {
           const data = await response.json().catch(() => ({}))
-          throw new Error(data.error || 'Request failed')
+          throw new Error(data.error || '请求失败')
         }
 
         const reader = response.body.getReader()
@@ -724,20 +1161,22 @@
 
             if (event.event === 'delta') {
               answer += payload.text || ''
-              answer = cleanAnswerText(answer)
-              bubble.textContent = answer
+              bubble.textContent = cleanAnswerText(answer)
               bubble.scrollIntoView({ block: 'end', behavior: 'smooth' })
+              roleMessages[activeRoleId] = messages.innerHTML
             }
 
             if (event.event === 'error') {
-              throw new Error(payload.error || 'Stream failed')
+              throw new Error(payload.error || '流式生成失败')
             }
           }
         }
 
         if (!answer.trim()) {
-          bubble.textContent = 'No answer returned.'
+          bubble.textContent = '【响应为空】当前查询未返回可解析文本。'
         }
+
+        roleMessages[activeRoleId] = messages.innerHTML
       }
 
       function parseSseEvent(rawEvent) {
@@ -756,21 +1195,10 @@
         return event
       }
 
-      function cleanAnswerText(text) {
-        return text
-          .replace(/经过解读与整理，?反馈给用户一份工整的报告[。.]?/g, '')
-          .replace(/下面我将为你生成一份报告[。.]?/g, '')
-          .replace(/我将以工整的报告形式反馈[。.]?/g, '')
-          .replace(/以下是整理后的结果[：:]?[。.]?/g, '')
-          .replace(/为您呈现如下[：:]?[。.]?/g, '')
-          .replace(/\n{3,}/g, '\n\n')
-          .trim()
-      }
-
       function addMessage(type, label, text) {
-        if (!hasMessages) {
+        if (!roleHasMessages[activeRoleId]) {
           messages.textContent = ''
-          hasMessages = true
+          roleHasMessages[activeRoleId] = true
         }
 
         const item = document.createElement('article')
@@ -787,14 +1215,76 @@
         item.append(labelNode, bubble)
         messages.append(item)
         item.scrollIntoView({ block: 'end', behavior: 'smooth' })
+        roleMessages[activeRoleId] = messages.innerHTML
 
         return item
+      }
+
+      function getEmptyState(role) {
+        return `
+          <section class="empty">
+            <h2>${escapeHtml(role.title)}</h2>
+            <p># Module active. ${escapeHtml(role.role)} 已就绪。输入自然语言问题，系统将按当前角色组织就业数据查询与解释。</p>
+            <div class="message system">
+              <span class="label">System_Output</span>
+              <div class="bubble">[System] ${escapeHtml(role.title)} 已连接。\n[Scope] ${escapeHtml(role.scope)}\n[Input] 支持学生、岗位、企业、投递、面试、offer 等数据问题。\n[Output] ${escapeHtml(role.outputs.join(' / '))}</div>
+            </div>
+            <div class="prompt-row">
+              ${role.prompts.map((prompt) => `<button class="prompt" type="button" onclick="fillPrompt(this)">${escapeHtml(prompt)}</button>`).join('')}
+            </div>
+          </section>
+        `
+      }
+
+      function getPlaceholder(roleId) {
+        const placeholders = {
+          teacher: '输入就业数据查询或管理分析问题...',
+          hr: '输入岗位需求、候选人筛选或招聘流程问题...',
+          student: '输入个人求职进度、岗位推荐或面试准备问题...',
+        }
+
+        return placeholders[roleId]
+      }
+
+      function getHint(roleId) {
+        const hints = {
+          teacher: 'CMD/CTRL + ENTER QUERY / TARGET: 学生档案、企业岗位、投递面试、offer 状态',
+          hr: 'CMD/CTRL + ENTER QUERY / TARGET: 岗位要求、候选人匹配、面试安排、招聘漏斗',
+          student: 'CMD/CTRL + ENTER QUERY / TARGET: 个人进度、岗位推荐、面试准备、行动计划',
+        }
+
+        return hints[roleId]
+      }
+
+      function fillPrompt(button) {
+        questionInput.value = button.textContent.trim()
+        questionInput.focus()
+      }
+
+      function cleanAnswerText(text) {
+        return text
+          .replace(/经过解读与整理，?反馈给用户一份工整的报告[。.]?/g, '')
+          .replace(/下面我将为你生成一份报告[。.]?/g, '')
+          .replace(/我将以工整的报告形式反馈[。.]?/g, '')
+          .replace(/以下是整理后的结果[：:]?[。.]?/g, '')
+          .replace(/为您呈现如下[：:]?[。.]?/g, '')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim()
       }
 
       function setLoading(isLoading) {
         sendButton.disabled = isLoading
         questionInput.disabled = isLoading
-        sendButton.textContent = isLoading ? 'WAIT' : 'QUERY'
+        sendButton.textContent = isLoading ? 'Running' : 'Query'
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;')
       }
     </script>
   </body>
